@@ -1,0 +1,67 @@
+<div class="card">
+    <div class="card-header">
+        Complete the form
+    </div>
+    <div class="card-body">
+        <form [formGroup]="stepperForm">
+            <div class="firstPage" *ngIf="stepperPage == 1">
+                <input formControlName="inputText" class="form-control" type="text" placeholder="Input your text">
+                <input formControlName="inputNumber" class="form-control" type="number" placeholder="Input your number">
+                
+                <div class="input-group">
+                    <span class="input-group-text">Start Date</span>
+                    <input formControlName="startDate" type="date" class="form-control">
+                    <span class="input-group-text">End Date</span>
+                    <input formControlName="endDate" type="date" class="form-control">
+                </div>
+    
+                <mat-form-field>
+                    <mat-label>Single Select</mat-label>
+                    <mat-select formControlName="singleSelect">
+                    @for (option of optionList; track option) {
+                        <mat-option [value]="option">{{option}}</mat-option>
+                    }
+                    </mat-select>
+                </mat-form-field>
+    
+                <mat-form-field>
+                    <mat-label>Multi Select</mat-label>
+                    <mat-select formControlName="multiSelect" multiple>
+                    @for (option of optionList; track option) {
+                        <mat-option [value]="option">{{option}}</mat-option>
+                    }
+                    </mat-select>
+                </mat-form-field>
+    
+                <label class="form-label"> Is the default button checked ?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" formControlName="isDefaultRadioOptionChecked" [value]="true" name="isDefaultRadioOptionChecked" id="exampleRadios1"  checked>
+                    <label class="form-check-label" for="exampleRadios1">
+                        Default radio
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" formControlName="isDefaultRadioOptionChecked" [value]="false" name="isDefaultRadioOptionChecked" id="exampleRadios2" value="radioOption2">
+                    <label class="form-check-label" for="exampleRadios2">
+                        Second radio
+                    </label>
+                </div>
+            </div>
+            
+            <div class="secondPage" *ngIf="stepperPage == 2">
+                <div class="form-check" *ngFor="let option of optionList">
+                    <input class="form-check-input" type="checkbox" [value]="option" (change)="onCheckboxChange($event, option)">
+                    <label class="form-check-label">
+                        {{ option }}
+                    </label>
+                </div>
+                
+            </div>
+        </form>
+    </div>
+    <div class="card-footer">
+        <button id="prevBtn" type="button" class="btn btn-secondary" [disabled]="stepperPage == 1" (click)="onPrevClick()">Previous</button>
+        <button id="submitBtn" type="button" class="btn btn-success"  (click)="postData()">Submit</button>
+        <button id="nextBtn" type="button" class="btn btn-primary" (click)="onNextClick()">Next</button>
+    </div>
+</div>

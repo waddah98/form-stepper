@@ -1,0 +1,30 @@
+.card{
+    margin: 10px;
+    width: 800px;
+    height: 800px;
+}
+.card-header{
+    background-color: #7886C7;
+    color:whitesmoke;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.firstPage,
+.secondPage{
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+    // width: 70%;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.card-footer{
+    display: flex;
+    justify-content: space-between;
+}
