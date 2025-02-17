@@ -120,7 +120,7 @@ export class FormModuleComponent implements OnInit{
       this.selectedFile = file;
       this.previewFile(file);
       this.stepperForm.get('file')?.setValue(file);
-      
+
     }
   }
   previewFile(file: File): void {
@@ -222,10 +222,6 @@ export class FormModuleComponent implements OnInit{
         });
         this.items = this.storedData.dragDropItems; // Update the items array
       };
-      if(this.storedData.file){
-
-      }
-  
       return this.storedData;
     }
     return null;
