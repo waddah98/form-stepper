@@ -23,9 +23,10 @@ import {CdkDragDrop, CdkDrag, CdkDropList, moveItemInArray} from '@angular/cdk/d
 export class FormModuleComponent implements OnInit{
 
   constructor(private fb: FormBuilder){}
+  minEndDate: string | null = null;
   optionList: string[] = ['Option1', 'Option2', 'Option3'];
   items = ['Zero', 'One', 'Two', 'Three', 'Four'];
-
+  
   selectedFile: File | null = null;
   previewUrl: string | ArrayBuffer | null = null; // Holds the Base64-encoded image URL
 
@@ -38,7 +39,7 @@ export class FormModuleComponent implements OnInit{
   
   stepperPage: number = 1;
   ngOnInit(): void {
-    this.stepperPage = 1;
+    this.stepperPage = 2;
 
     this.stepperForm = new FormGroup({
       inputText: new FormControl('', [Validators.required]),
@@ -68,6 +69,14 @@ export class FormModuleComponent implements OnInit{
     this.loadFromLocalStorage(this.stepperForm, 'myForm');
   }
   
+  onStartDateChange(){
+    const startDateValue = this.stepperForm.get('startDate')?.value;
+    if (startDateValue) {
+      this.minEndDate = startDateValue;
+      this.stepperForm.get('endDate')?.reset();
+    }
+  }
+
   get checkedOptions(): FormArray {
     return this.stepperForm.get('checkedOptions') as FormArray;
   }
@@ -75,15 +84,7 @@ export class FormModuleComponent implements OnInit{
     return this.stepperForm.get('dragDropItems') as FormArray;
   }
 
-  // onCheckboxChange(event: any, option: string) {
-  //   if (event.target.checked) {
-  //     this.checkedOptions.push(new FormControl(option));
-  //   } else {
-  //     const index = this.checkedOptions.controls.findIndex(control => control.value === option);
-  //     this.checkedOptions.removeAt(index);
-  //   }
-  // }
-
+  
   onCheckboxChange(event: any, option: string) {
     if (event.target.checked) {
       if (!this.checkedOptions.controls.find(control => control.value === option)) {
@@ -145,6 +146,10 @@ export class FormModuleComponent implements OnInit{
   removeArrayData(index: number){
     this.formArrayData.removeAt(index);
   }
+  isLastGroupValid(): boolean {
+    const lastGroup = this.formArrayData.at(this.formArrayData.length - 1) as FormGroup;
+    return lastGroup.valid;
+  }
 
   onPrevClick(){
     this.stepperPage--;
@@ -161,40 +166,57 @@ export class FormModuleComponent implements OnInit{
   }
 
   saveToLocalStorage(form: FormGroup, key: string){
-    localStorage.setItem(key, JSON.stringify(form.value));
+    let formData = form.value;
+    let indexedData: { [key: number]: any } = {};
+    formData.formArrayData.forEach((item: any, index: number) => {
+      indexedData[index] = item;
+  });
+  
+  formData.formArrayData = indexedData;
+  localStorage.setItem(key, JSON.stringify(form.value));
   }
-  loadFromLocalStorage(form:FormGroup, key: string): any {
+  
+  
+  loadFromLocalStorage(form: FormGroup, key: string): any {
     const stored = localStorage.getItem(key);
     if (stored) {
       this.storedData = JSON.parse(stored);
-      form.patchValue(this.storedData);
-
-      if (this.storedData.checkedOptions) {
-        this.checkedOptions.clear();
-        this.storedData.checkedOptions.forEach((option: string) => {
-          this.checkedOptions.push(new FormControl(option));
-        });
+  
+      // Convert indexed object back to an array before patching the form
+      if (this.storedData.formArrayData) {
+        const arrayData = Object.values(this.storedData.formArrayData); // Convert object to array
+        this.storedData.formArrayData = arrayData;
       }
-
-      if (this.storedData.dragDropItems) {
-        this.dragDropItems.clear();
-        this.storedData.dragDropItems.forEach((item: string) => {
-          this.dragDropItems.push(new FormControl(item));
-        });
-        this.items = this.storedData.dragDropItems; // Update the items array
-      }
-
+  
+      form.patchValue(this.storedData); // Now patching will work
+  
       if (this.storedData.formArrayData) {
         this.formArrayData.clear();
-        this.storedData.formArrayData.forEach((group: any) => {
+        
+        Object.keys(this.storedData.formArrayData).forEach((key) => {
+          const group = this.storedData.formArrayData[key];
           const dataGroup = this.fb.group({
             inputTexts: [group.inputTexts, Validators.required],
             inputNumbers: [group.inputNumbers, Validators.required],
           });
           this.formArrayData.push(dataGroup);
         });
-      }
-
+      };
+      if (this.storedData.checkedOptions) {
+        this.checkedOptions.clear();
+        this.storedData.checkedOptions.forEach((option: string) => {
+          this.checkedOptions.push(new FormControl(option));
+        });
+      };
+      
+      if (this.storedData.dragDropItems) {
+        this.dragDropItems.clear();
+        this.storedData.dragDropItems.forEach((item: string) => {
+          this.dragDropItems.push(new FormControl(item));
+        });
+        this.items = this.storedData.dragDropItems; // Update the items array
+      };
+  
       return this.storedData;
     }
     return null;

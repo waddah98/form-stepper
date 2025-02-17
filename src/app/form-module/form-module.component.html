@@ -6,13 +6,25 @@
         <form [formGroup]="stepperForm">
             <div class="firstPage" *ngIf="stepperPage == 1">
                 <input formControlName="inputText" class="form-control" type="text" placeholder="Input your text">
-                <input formControlName="inputNumber" class="form-control" type="number" placeholder="Input your number">
+                <input 
+                formControlName="inputNumber" 
+                class="form-control" type="number" 
+                placeholder="Input your number"
+                pattern="\d*" 
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 
                 <div class="input-group">
                     <span class="input-group-text">Start Date</span>
-                    <input formControlName="startDate" type="date" class="form-control">
+                    <input 
+                    formControlName="startDate" 
+                    type="date" 
+                    class="form-control"
+                    (change)="onStartDateChange()">
                     <span class="input-group-text">End Date</span>
-                    <input formControlName="endDate" type="date" class="form-control">
+                    <input 
+                    formControlName="endDate" 
+                    type="date" class="form-control"
+                    [min]="minEndDate">
                 </div>
     
                 <mat-form-field>
@@ -82,11 +94,25 @@
                         <label for="inputTexts-{{i}}">Text</label>
                         <input class="form-control" id="inputTexts-{{i}}" formControlName="inputTexts">
                         <label for="inputNumbers-{{i}}">Number</label>
-                        <input type="number" class="form-control" id="inputNumbers-{{i}}" formControlName="inputNumbers">
-                        <button type="button" class="btn btn-danger" (click)="removeArrayData(i)">Remove</button>
+                        <input type="number" 
+                        class="form-control" 
+                        id="inputNumbers-{{i}}" 
+                        formControlName="inputNumbers"
+                        pattern="\d*" 
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <button 
+                        type="button" 
+                        class="btn btn-danger" 
+                        (click)="removeArrayData(i)"
+                        [disabled]="formArrayData.controls.length === 1">Remove</button>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary w-50" (click)="addArrayData()">Add</button>
+                <button 
+                type="button" 
+                class="btn btn-primary w-50" 
+                (click)="addArrayData()"
+                [disabled]="!isLastGroupValid()"
+                >Add</button>
 
             </div>
         </form>
@@ -94,6 +120,6 @@
     <div class="card-footer">
         <button id="prevBtn" type="button" class="btn btn-secondary" [disabled]="stepperPage == 1" (click)="onPrevClick()">Previous</button>
         <button id="submitBtn" type="button" class="btn btn-success"  (click)="postData()">Submit</button>
-        <button id="nextBtn" type="button" class="btn btn-primary" (click)="onNextClick()">Next</button>
+        <button id="nextBtn" type="button" class="btn btn-primary" (click)="onNextClick()" [disabled]="stepperPage >= 2">Next</button>
     </div>
 </div>
