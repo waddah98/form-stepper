@@ -8,7 +8,7 @@
                 <input formControlName="inputText" class="form-control" type="text" placeholder="Input your text">
                 <input 
                 formControlName="inputNumber" 
-                class="form-control" type="number" 
+                class="form-control" type="text" 
                 placeholder="Input your number"
                 pattern="\d*" 
                 oninput="this.value = this.value.replace(/[^0-9]/g, '')">
@@ -79,7 +79,7 @@
                     }
                 </div>
 
-                <div *ngIf="selectedFile == null" class="file-drop-area" (click)="fileInput.click()">
+                <div *ngIf="this.stepperForm.get('file')?.value == null" class="file-drop-area" (click)="fileInput.click()">
                     <span class="drop-text">Drag & drop a file or click to browse</span>
                     <input
                         type="file"
@@ -87,14 +87,18 @@
                         #fileInput
                         hidden/>
                 </div>
-                <span *ngIf="selectedFile != null"> File uploaded successfully </span>
+                <div  *ngIf="this.stepperForm.get('file')?.value != null" class="file-preview-area">
+                    <span> File uploaded successfully </span>
+                    <button class="btn btn-danger"(click)="deleteFile()"></button>
+                    <i class="bi bi-file-x"></i>
+                </div>
                 
                 <div formArrayName="formArrayData">
                     <div id="formarray" *ngFor="let item of formArrayData.controls; let i = index" [formGroupName]="i">
                         <label for="inputTexts-{{i}}">Text</label>
                         <input class="form-control" id="inputTexts-{{i}}" formControlName="inputTexts">
                         <label for="inputNumbers-{{i}}">Number</label>
-                        <input type="number" 
+                        <input type="text" 
                         class="form-control" 
                         id="inputNumbers-{{i}}" 
                         formControlName="inputNumbers"

@@ -117,9 +117,10 @@ export class FormModuleComponent implements OnInit{
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-
-    this.selectedFile = file;
-    this.previewFile(file);
+      this.selectedFile = file;
+      this.previewFile(file);
+      this.stepperForm.get('file')?.setValue(file);
+      
     }
   }
   previewFile(file: File): void {
@@ -129,6 +130,11 @@ export class FormModuleComponent implements OnInit{
       this.stepperForm.get('file')?.setValue(this.previewUrl); // Update the form control
     };
     reader.readAsDataURL(file); // Converts the file to a Base64-encoded string
+  }
+  deleteFile(){
+    this.selectedFile = null;
+    this.previewUrl = null;
+    this.stepperForm.get('file')?.setValue(null);
   }
 
   get formArrayData(): FormArray {
@@ -216,6 +222,9 @@ export class FormModuleComponent implements OnInit{
         });
         this.items = this.storedData.dragDropItems; // Update the items array
       };
+      if(this.storedData.file){
+
+      }
   
       return this.storedData;
     }
