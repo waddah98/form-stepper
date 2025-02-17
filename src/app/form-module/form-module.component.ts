@@ -39,7 +39,7 @@ export class FormModuleComponent implements OnInit{
   
   stepperPage: number = 1;
   ngOnInit(): void {
-    this.stepperPage = 2;
+    this.stepperPage = 1;
 
     this.stepperForm = new FormGroup({
       inputText: new FormControl('', [Validators.required]),
